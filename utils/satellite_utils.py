@@ -31,8 +31,6 @@ def compute_ephemeris(satellite_url, latitude, longitude, start_date_utc, start_
 
         # Fetch TLE data for custom satellite or use predefined URL
         if custom_tle:
-            st.write("Using custom TLE data for satellite computation.")
-            st.write(f"Custom TLE Data:\nName: {custom_tle[0]}\nTLE Line 1: {custom_tle[1]}\nTLE Line 2: {custom_tle[2]}")
             satellites = [EarthSatellite(custom_tle[1], custom_tle[2], custom_tle[0], ts)]
         else:
             r = requests.get(satellite_url)
