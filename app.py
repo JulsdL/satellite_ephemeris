@@ -53,14 +53,18 @@ def main():
                 st.error(f"Error fetching location data: {str(e)}")
     else:
         st.write("Select your location on the map:")
-        default_location = [37.7749, -122.4194]
-        map_display = folium.Map(location=default_location, zoom_start=2)
-        folium.Marker(default_location, tooltip="Default Location").add_to(map_display)
-        map_data = st_folium(map_display, width=350, height=300)
-        if map_data and 'last_clicked' in map_data and map_data['last_clicked']:
-            latitude = map_data['last_clicked']['lat']
-            longitude = map_data['last_clicked']['lng']
+        # Use an empty container to manage the map rendering
+        map_placeholder = st.empty()
+        with map_placeholder:
+            default_location = [37.7749, -122.4194]
+            map_display = folium.Map(location=default_location, zoom_start=2)
+            folium.Marker(default_location, tooltip="Default Location").add_to(map_display)
+            map_data = st_folium(map_display, width=350, height=300)
+            if map_data and 'last_clicked' in map_data and map_data['last_clicked']:
+                latitude = map_data['last_clicked']['lat']
+                longitude = map_data['last_clicked']['lng']
 
+    # Latitude and Longitude input fields
     latitude = st.text_input("Latitude:", value=str(latitude) if 'latitude' in locals() else "")
     longitude = st.text_input("Longitude:", value=str(longitude) if 'longitude' in locals() else "")
 
