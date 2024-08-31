@@ -82,6 +82,7 @@ def main():
                     timezone = local_timezone
             else:
                 timezone = local_timezone
+                timezone_str = str(timezone)
                 timezone_abbr = timezone.tzname(datetime.now())
                 st.write(f"Using local time zone: {timezone} ({timezone_abbr})")
 
@@ -107,6 +108,7 @@ def main():
                 satellite_url, float(latitude), float(longitude),
                 start_datetime_utc.strftime('%Y-%m-%d'),
                 start_datetime_utc.time(), end_datetime_utc.time(),
+                timezone_str,  # Pass the timezone string to the function
                 custom_tle
             )
             if not ephemeris_df.empty:

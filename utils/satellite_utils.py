@@ -5,6 +5,7 @@ import requests
 import pandas as pd
 import numpy as np
 from datetime import datetime
+import pytz
 
 def get_cardinal_direction(azimuth_degrees):
     """
@@ -14,9 +15,9 @@ def get_cardinal_direction(azimuth_degrees):
     index = int((azimuth_degrees + 22.5) // 45)
     return directions[index % 8]
 
-def compute_ephemeris(satellite_url, latitude, longitude, start_date_utc, start_time, end_time, custom_tle=None):
+def compute_ephemeris(satellite_url, latitude, longitude, start_date_utc, start_time, end_time, timezone_str, custom_tle=None):
     """
-    Computes the ephemeris for the satellite.
+    Computes the ephemeris for the satellite and converts times to local time.
     """
     try:
         ts = load.timescale()
@@ -40,6 +41,7 @@ def compute_ephemeris(satellite_url, latitude, longitude, start_date_utc, start_
 
         # Prepare the ephemeris data
         ephemeris_data = []
+        local_tz = pytz.timezone(timezone_str)
         for satellite in satellites:
             difference = satellite - observer
             for ti in times:
@@ -50,8 +52,12 @@ def compute_ephemeris(satellite_url, latitude, longitude, start_date_utc, start_
                 if alt.degrees > 0:  # Check if the satellite is above the horizon
                     azimuth_degrees = az.degrees
                     cardinal_direction = get_cardinal_direction(azimuth_degrees)
+
+                    # Convert UTC time to local time
+                    local_time = ti.utc_datetime().replace(tzinfo=pytz.utc).astimezone(local_tz)
+
                     ephemeris_data.append({
-                        "Date (UTC)": ti.utc_strftime('%Y-%m-%d %H:%M:%S'),
+                        "Date (Local Time)": local_time.strftime('%Y-%m-%d %H:%M:%S'),
                         "R.A.": str(ra),
                         "Dec": str(dec),
                         "Altitude": f"{alt.degrees:.2f}°",
