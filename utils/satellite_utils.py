@@ -48,7 +48,6 @@ def compute_ephemeris(satellite_url, latitude, longitude, start_date_utc, start_
                 topocentric = difference.at(ti)
                 ra, dec, distance = topocentric.radec()
                 alt, az, distance = topocentric.altaz()
-                st.write(f"Checking time {ti.utc_iso()} - Altitude: {alt.degrees:.2f} degrees")  # Debugging statement
 
                 if alt.degrees > 0:  # Check if the satellite is above the horizon
                     azimuth_degrees = az.degrees
