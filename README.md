@@ -57,7 +57,7 @@ To run the app locally, follow these steps:
 
 ## 🧩 Project Structure
 
-````plaintext
+```plaintext
 .
 ├── app.py                      # Main application file
 ├── utils
@@ -66,6 +66,7 @@ To run the app locally, follow these steps:
 ├── requirements.txt            # Python dependencies
 ├── README.md                   # Project README
 └── .gitignore                  # Git ignore file
+```
 
 ## 🔍 Dependencies
 
@@ -82,7 +83,7 @@ install these with:
 
 ```bash
 pip install -r requirements.txt
-````
+```
 
 ## 🌠 Usage
 
