@@ -36,70 +36,66 @@ def main():
     # Detect user's local time zone
     local_timezone = datetime.now().astimezone().tzinfo
 
-    # Coordinates and time input
-    with st.container():
-        col1, col2 = st.columns([2, 1])
-        with col1:
-            use_address = st.checkbox("Use Address to Set Location", value=False)
-            if use_address:
-                address = st.text_input("Enter Your Address:")
-                if address:
-                    geolocator = Nominatim(user_agent="satellite-observation-app")
-                    try:
-                        location = geolocator.geocode(address, timeout=10)
-                        if location:
-                            latitude = location.latitude
-                            longitude = location.longitude
-                        else:
-                            st.write("Could not find the location. Please enter a valid address.")
-                    except Exception as e:
-                        st.error(f"Error fetching location data: {str(e)}")
-            else:
-                st.write("Select your location on the map:")
-                default_location = [37.7749, -122.4194]
-                map_display = folium.Map(location=default_location, zoom_start=2)
-                folium.Marker(default_location, tooltip="Default Location").add_to(map_display)
-                map_data = st_folium(map_display, width=350, height=300)
-                if map_data and 'last_clicked' in map_data and map_data['last_clicked']:
-                    latitude = map_data['last_clicked']['lat']
-                    longitude = map_data['last_clicked']['lng']
+    # Coordinates and time input - Default to mobile-friendly single-column layout
+    use_address = st.checkbox("Use Address to Set Location", value=False)
+    if use_address:
+        address = st.text_input("Enter Your Address:")
+        if address:
+            geolocator = Nominatim(user_agent="satellite-observation-app")
+            try:
+                location = geolocator.geocode(address, timeout=10)
+                if location:
+                    latitude = location.latitude
+                    longitude = location.longitude
+                else:
+                    st.write("Could not find the location. Please enter a valid address.")
+            except Exception as e:
+                st.error(f"Error fetching location data: {str(e)}")
+    else:
+        st.write("Select your location on the map:")
+        default_location = [37.7749, -122.4194]
+        map_display = folium.Map(location=default_location, zoom_start=2)
+        folium.Marker(default_location, tooltip="Default Location").add_to(map_display)
+        map_data = st_folium(map_display, width=350, height=300)
+        if map_data and 'last_clicked' in map_data and map_data['last_clicked']:
+            latitude = map_data['last_clicked']['lat']
+            longitude = map_data['last_clicked']['lng']
 
-        with col2:
-            latitude = st.text_input("Latitude:", value=str(latitude) if 'latitude' in locals() else "")
-            longitude = st.text_input("Longitude:", value=str(longitude) if 'longitude' in locals() else "")
+    latitude = st.text_input("Latitude:", value=str(latitude) if 'latitude' in locals() else "")
+    longitude = st.text_input("Longitude:", value=str(longitude) if 'longitude' in locals() else "")
 
-            # Determine time zone from GPS coordinates
-            if latitude and longitude:
-                try:
-                    tf = TimezoneFinder()
-                    timezone_str = tf.timezone_at(lng=float(longitude), lat=float(latitude))
-                    timezone = pytz.timezone(timezone_str)
-                    current_time = datetime.now()
-                    timezone_abbr = get_abbreviated_timezone(timezone_str, current_time)
-                    st.write(f"Detected Time Zone: {timezone_str} ({timezone_abbr})")
-                except Exception as e:
-                    st.error(f"Error determining timezone: {str(e)}")
-                    timezone = local_timezone
-            else:
-                timezone = local_timezone
-                timezone_str = str(timezone)
-                timezone_abbr = timezone.tzname(datetime.now())
-                st.write(f"Using local time zone: {timezone} ({timezone_abbr})")
+    # Determine time zone from GPS coordinates
+    if latitude and longitude:
+        try:
+            tf = TimezoneFinder()
+            timezone_str = tf.timezone_at(lng=float(longitude), lat=float(latitude))
+            timezone = pytz.timezone(timezone_str)
+            current_time = datetime.now()
+            timezone_abbr = get_abbreviated_timezone(timezone_str, current_time)
+            st.write(f"Detected Time Zone: {timezone_str} ({timezone_abbr})")
+        except Exception as e:
+            st.error(f"Error determining timezone: {str(e)}")
+            timezone = local_timezone
+    else:
+        timezone = local_timezone
+        timezone_str = str(timezone)
+        timezone_abbr = timezone.tzname(datetime.now())
+        st.write(f"Using local time zone: {timezone} ({timezone_abbr})")
 
-            start_date_local = st.date_input("Start Date (Local Time):")
-            start_time_local = st.time_input("Start Time (Local Time):")
-            end_time_local = st.time_input("End Time (Local Time):")
+    start_date_local = st.date_input("Start Date (Local Time):")
+    start_time_local = st.time_input("Start Time (Local Time):")
+    end_time_local = st.time_input("End Time (Local Time):")
 
-            # Convert local time to UTC
-            start_datetime_local = datetime.combine(start_date_local, start_time_local)
-            end_datetime_local = datetime.combine(start_date_local, end_time_local)
-            start_datetime_utc = start_datetime_local.astimezone(pytz.utc)
-            end_datetime_utc = end_datetime_local.astimezone(pytz.utc)
+    # Convert local time to UTC
+    start_datetime_local = datetime.combine(start_date_local, start_time_local)
+    end_datetime_local = datetime.combine(start_date_local, end_time_local)
+    start_datetime_utc = start_datetime_local.astimezone(pytz.utc)
+    end_datetime_utc = end_datetime_local.astimezone(pytz.utc)
 
-            st.write(f"Start Time in UTC: {start_datetime_utc.strftime('%Y-%m-%d %H:%M:%S')}")
-            st.write(f"End Time in UTC: {end_datetime_utc.strftime('%Y-%m-%d %H:%M:%S')}")
+    st.write(f"Start Time in UTC: {start_datetime_utc.strftime('%Y-%m-%d %H:%M:%S')}")
+    st.write(f"End Time in UTC: {end_datetime_utc.strftime('%Y-%m-%d %H:%M:%S')}")
 
-            compute_button = st.button("Compute Satellite Positions")
+    compute_button = st.button("Compute Satellite Positions")
 
     # Align the table with the button
     if compute_button:
