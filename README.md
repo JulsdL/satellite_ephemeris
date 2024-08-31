@@ -1,3 +1,14 @@
+---
+title: Satellite Ephemeris Calculator
+emoji: 🚀
+colorFrom: green
+colorTo: blue
+sdk: streamlit
+sdk_version: "1.24.1"
+app_file: app.py
+pinned: false
+---
+
 # 🌌 Satellite Ephemeris Calculator with Streamlit
 
 Welcome to the **Satellite Ephemeris Calculator**! This application empowers users to track and observe satellites in real time from any location on Earth. It's perfect for astronomy enthusiasts, satellite observers, and anyone curious about the night sky.
